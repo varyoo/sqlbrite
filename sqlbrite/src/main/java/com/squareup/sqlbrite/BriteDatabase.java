@@ -275,11 +275,13 @@ public final class BriteDatabase implements Closeable {
     }
 
     final Query query = new Query() {
-      @Override public Cursor run() {
+      @Override public Cursor run(final String... updatedArgs) {
         if (transactions.get() != null) {
           throw new IllegalStateException("Cannot execute observable query in a transaction.");
         }
-        return getReadableDatabase().rawQuery(sql, args);
+          String[] effectiveArgs = args;
+          if(updatedArgs.length != 0) effectiveArgs = updatedArgs;
+        return getReadableDatabase().rawQuery(sql, effectiveArgs);
       }
 
       @Override public String toString() {

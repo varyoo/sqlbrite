@@ -75,7 +75,7 @@ public final class SqlBrite {
     /** Execute the query on the underlying database and return the resulting cursor. */
     @CheckResult @WorkerThread
     // TODO Implementations might return null, which is gross. Throw?
-    public abstract Cursor run();
+    public abstract Cursor run(final String... updatedArgs);
 
     /**
      * Execute the query on the underlying database and return an Observable of each row mapped to
@@ -98,10 +98,10 @@ public final class SqlBrite {
      * a query and should be preferred, where possible.
      */
     @CheckResult @NonNull
-    public final <T> Observable<T> asRows(final Func1<Cursor, T> mapper) {
+    public final <T> Observable<T> asRows(final Func1<Cursor, T> mapper, final String... updatedArgs) {
       return Observable.create(new Observable.OnSubscribe<T>() {
         @Override public void call(Subscriber<? super T> subscriber) {
-          Cursor cursor = run();
+          Cursor cursor = run(updatedArgs);
           try {
             while (cursor.moveToNext() && !subscriber.isUnsubscribed()) {
               subscriber.onNext(mapper.call(cursor));

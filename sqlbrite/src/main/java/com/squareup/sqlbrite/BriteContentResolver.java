@@ -76,8 +76,10 @@ public final class BriteContentResolver {
       @Nullable final String selection, @Nullable final String[] selectionArgs, @Nullable
       final String sortOrder, final boolean notifyForDescendents) {
     final Query query = new Query() {
-      @Override public Cursor run() {
-        return contentResolver.query(uri, projection, selection, selectionArgs, sortOrder);
+      @Override public Cursor run(String... updatedArgs) {
+        String[] effectiveArgs = selectionArgs;
+        if(updatedArgs.length != 0) effectiveArgs = updatedArgs;
+        return contentResolver.query(uri, projection, selection, effectiveArgs, sortOrder);
       }
     };
     OnSubscribe<Query> subscribe = new OnSubscribe<Query>() {
